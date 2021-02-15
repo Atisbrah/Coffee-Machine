@@ -6,21 +6,21 @@ public class CoffeeMachine {
 
     public static void main(String[] args) {
         Scanner scanner = new Scanner(System.in);
-        Machine machine = new Machine(400, 540, 120, 9, 550);
+        Machine machine = new Machine(400, 540, 120, 9, 550); // create an object from the machine class, and we assign the following numbers as defaults.
 
-        while (machine.isWorking()) {
-            machine.execute(scanner.next());
+        while (machine.isWorking()) { //as long as the 'isWorking' method returns true, loop runs.
+            machine.execute(scanner.next()); //with the machine.execute, we check which state the machine is in right now, and assign user input with it.
         }
     }
     
 }
 
 class Machine {
-    
+    //states defined
     enum MachineState {
         OFF, MAIN, BUY, FILL_WATER, FILL_MILK, FILL_COFFEE, FILL_CUPS
     }
-    
+    //beverage requirements assigned and saved in 'need' variables.
     public enum Beverage {
         ESPRESSO(250, 0, 16, 4),
         LATTE(350, 75, 20, 7),
@@ -62,22 +62,22 @@ class Machine {
     private int cups;
     private int money;
 
-    public Machine(int water, int milk, int coffee, int cups, int money) {
-        this.water = water;
+    public Machine(int water, int milk, int coffee, int cups, int money) {//when created as object, the first inputs are saved here,
+        this.water = water;                                              
         this.milk = milk;
         this.coffee = coffee;
         this.cups = cups;
         this.money = money;
 
-        setMainState();
+        setMainState(); // and we set the state as MAIN in the beginning.
     }
 
-    public boolean isWorking() {
+    public boolean isWorking() {//as long as 'machine.state' is NOT OFF, the 'isWorking' method is true.
         return state != MachineState.OFF;
     }
 
-    public void execute(String input) {
-        switch (state) {
+    public void execute(String input) {//we check which state the machine is in, and give the called method the user input.
+        switch (state) {//we set the MAIN as state when we called the object, //so we enter 'setState' first with the user input.
             case MAIN:
                 setState(input);
                 break;
@@ -85,7 +85,7 @@ class Machine {
                 handleBuying(input);
                 setMainState();
                 break;
-            case FILL_WATER:
+            case FILL_WATER://if state changed to FILL_WATER, we ask for another input, and ask for the next material to be filled.
                 water += Integer.parseInt(input);
                 System.out.print("Write how many ml of milk do you want to add:\n> ");
                 state = MachineState.FILL_MILK;
@@ -102,32 +102,32 @@ class Machine {
                 break;
             case FILL_CUPS:
                 cups += Integer.parseInt(input);
-                setMainState();
+                setMainState();//when all materials are checked and filled with x ammount, we return back to MAIN state.
                 break;
             default:
                 break;
         }
     }
 
-    public void setState(String command) {
+    public void setState(String command) {//setState receives user input from 'execute', and decides in switch which command to run.
         switch (command) {
-            case "remaining":
-                printState();
+            case "remaining": //we use 'printState' method,
+                printState();//and return to MAIN state.
                 setMainState();
                 break;
             case "buy":
                 System.out.print("What do you want to buy? 1 - espresso, 2 - latte, 3 - cappuccino:\n> ");
-                state = MachineState.BUY;
+                state = MachineState.BUY;//ask user for another input, and set the state to BUY.
                 break;
             case "fill":
                 System.out.print("Write how many ml of water do you want to add:\n> ");
-                state = MachineState.FILL_WATER;
+                state = MachineState.FILL_WATER;//ask user for another input, and set the state to FILL_WATER.
                 break;
             case "take":
                 giveMoney();
                 setMainState();
                 break;
-            case "exit":
+            case "exit"://when the input is 'exit', the state is changed to OFF. Next time 'while' loop stops running.
                 state = MachineState.OFF;
                 break;
             default:
@@ -136,30 +136,30 @@ class Machine {
         }
     }
 
-    private void printState() {
+    private void printState() {//when called, the user receives a list of current quantity of materials.
         System.out.printf("The coffee machine has:\n%d of water\n%d of milk\n", water, milk);
         System.out.printf("%d of coffee beans\n%d of disposable cups\n%d of money\n", coffee, cups, money);
     }
 
-    private void setMainState() {
+    private void setMainState() {//when called, set the state to MAIN, and ask for input.
         state = MachineState.MAIN;
         System.out.print("\nWrite action (buy, fill, take, remaining, exit):\n> ");
     }
 
-    private void handleBuying(String input) {
+    private void handleBuying(String input) {//when called, we declare a Beverage type recipe variable.
         Beverage recipe;
 
-        switch (input) {
-            case "back":
+        switch (input) {//switch checks te user input, and if it is
+            case "back"://back, the state is set back to MAIN and we return.
                 state = MachineState.MAIN;
                 return;
-            case "1":
+            case "1"://1, we assign the values from Espresso to recipe.
                 recipe = Beverage.ESPRESSO;
                 break;
-            case "2":
+            case "2"://2, we assign the values from Latte to recipe.
                 recipe = Beverage.LATTE;
                 break;
-            case "3":
+            case "3"://3, we assign the values from Cappuccino to recipe.
                 recipe = Beverage.CAPPUCCINO;
                 break;
             default:
@@ -171,8 +171,8 @@ class Machine {
         acceptPayment(recipe.getPrice());
     }
 
-    private void makeCoffee(Beverage recipe) {
-        if (water < recipe.needWater()) {
+    private void makeCoffee(Beverage recipe) {//when called, makeCoffee receives the actual values of recipe as variables,
+        if (water < recipe.needWater()) {    //and checks if the machine's material quantity meets the recipe requirements.
             System.out.println("Sorry, not enough water!");
             return;
         }
@@ -191,7 +191,7 @@ class Machine {
             System.out.println("Sorry, not enough disposable cups!");
             return;
         }
-
+//if the requirements are met, the values are extracted. If not, the method returns.
         water -= recipe.needWater();
         milk -= recipe.needMilk();
         coffee -= recipe.needCoffee();
